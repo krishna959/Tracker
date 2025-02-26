@@ -1,36 +1,94 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="container">
-    <h2 class="my-4 text-center" style="color: black; font-weight: bold;">Add Meal</h2>
-    <form method="post" class="needs-validation" novalidate>
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="meal_name" class="form-label">Meal Name</label>
-            <input type="text" class="form-control" id="meal_name" name="meal_name" placeholder="e.g., Breakfast, Lunch" required>
-            <div class="invalid-feedback">Please enter a meal name.</div>
-        </div>
-        <div class="mb-3">
-            <label for="calories_consumed" class="form-label">Calories Consumed</label>
-            <input type="number" class="form-control" id="calories_consumed" name="calories_consumed" placeholder="e.g., 500" required>
-            <div class="invalid-feedback">Please enter the calories consumed.</div>
-        </div>
-        <button type="submit" class="btn btn-success w-100">Add Meal</button>
-    </form>
-</div>
-<script>
-    // Enable client-side validation
-    (function () {
-        'use strict';
-        const forms = document.querySelectorAll('.needs-validation');
-        Array.from(forms).forEach(form => {
-            form.addEventListener('submit', event => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+        <h2 class="text-center text-2xl font-bold text-gray-800 mb-4">🥗 Add Meal</h2>
+
+        <form method="post" id="mealForm" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Meal Name -->
+            <div>
+                <label for="meal_name" class="block font-medium text-gray-700">Meal Name</label>
+                <input type="text" id="meal_name" name="meal_name" placeholder="e.g., Breakfast, Lunch" 
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                    required>
+                <p id="mealError" class="text-red-500 text-sm hidden">⚠ Please enter a meal name.</p>
+            </div>
+
+            <!-- Calories Consumed -->
+            <div>
+                <label for="calories_consumed" class="block font-medium text-gray-700">Calories Consumed</label>
+                <input type="number" id="calories_consumed" name="calories_consumed" placeholder="e.g., 500" 
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                    required>
+                <p id="caloriesError" class="text-red-500 text-sm hidden">⚠ Please enter a valid calorie amount.</p>
+            </div>
+
+            <!-- Live Calories Counter -->
+            <div class="bg-gray-100 p-3 rounded-md flex justify-between items-center">
+                <span class="text-gray-700">Total Calories:</span>
+                <span id="caloriesCount" class="text-lg font-semibold text-blue-500">0 kcal</span>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition duration-200">
+                ➕ Add Meal
+            </button>
+        </form>
+    </div>
+
+    <!-- JavaScript for Real-time Validation & Calories Counter -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const mealForm = document.getElementById("mealForm");
+            const mealInput = document.getElementById("meal_name");
+            const caloriesInput = document.getElementById("calories_consumed");
+            const caloriesCount = document.getElementById("caloriesCount");
+            const mealError = document.getElementById("mealError");
+            const caloriesError = document.getElementById("caloriesError");
+
+            // Live Calories Counter
+            caloriesInput.addEventListener("input", function () {
+                const value = this.value;
+                caloriesCount.textContent = value ? `${value} kcal` : "0 kcal";
+            });
+
+            // Real-time Validation
+            mealInput.addEventListener("input", function () {
+                mealError.classList.toggle("hidden", this.value.trim() !== "");
+            });
+
+            caloriesInput.addEventListener("input", function () {
+                caloriesError.classList.toggle("hidden", this.value.trim() !== "" && !isNaN(this.value) && this.value > 0);
+            });
+
+            // Form Submission Validation
+            mealForm.addEventListener("submit", function (event) {
+                let valid = true;
+
+                if (!mealInput.value.trim()) {
+                    mealError.classList.remove("hidden");
+                    valid = false;
                 }
-                form.classList.add('was-validated');
-            }, false);
+
+                if (!caloriesInput.value.trim() || isNaN(caloriesInput.value) || caloriesInput.value <= 0) {
+                    caloriesError.classList.remove("hidden");
+                    valid = false;
+                }
+
+                if (!valid) {
+                    event.preventDefault();
+                }
+            });
         });
-    })();
-</script>
-{% endblock %}
+    </script>
+</body>
+</html>
