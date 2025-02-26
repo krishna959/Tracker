@@ -41,11 +41,16 @@ def dashboard(request):
 
     # ✅ Fetch User Activities
     activities = Activity.objects.filter(user=user).order_by('-id')
+    meals = Meal.objects.filter(user=user).order_by('-id')
 
     # ✅ Calculate total calories burned
     total_calories_burned = Activity.objects.filter(user=request.user).aggregate(Sum('calories_burned'))['calories_burned__sum'] or 0
 
-    remaining_calories = round(calories - total_calories_burned)
+    # calculate total calorie intake
+    total_calories_consumed = Meal.objects.filter(user=request.user).aggregate(Sum('calories_consumed'))['calories_consumed__sum'] or 0
+
+    remaining_calories = round(calories - total_calories_burned+total_calories_consumed)
+    total_calorie = round(total_calories_burned-total_calories_consumed)
 
 
     # ✅ Debugging Logs
@@ -60,8 +65,11 @@ def dashboard(request):
         "weight": weight,
         "goal": goal,
         "activities": activities,
+        "meals": meals,
         "total_calories_burned": total_calories_burned , # Passing total burned calories
+        "total_calories_consumed": total_calories_consumed,
         "remaining_calories": remaining_calories,
+        "total_calorie": total_calorie,
     })
 
 
@@ -98,6 +106,12 @@ def add_meal(request):
             meal = form.save(commit=False)
             meal.user = request.user
             meal.save()
+
+            total_calories_consumed = Meal.objects.filter(user=request.user).aggregate(Sum('calories_consumed'))['calories_consumed__sum'] or 0
+
+            # store in session
+            request.session['total_calories_consumed'] = total_calories_consumed
+
             return redirect('dashboard')
     else:
         form = MealForm()
@@ -110,3 +124,18 @@ def delete_activity(request, activity_id):
     if request.method == "POST":
         activity.delete()
     return redirect("dashboard")  # Redirect back to the dashboard
+
+@login_required
+def delete_meal(request, meal_id):
+    meal = get_object_or_404(Meal, id=meal_id, user=request.user)
+    if request.method == "POST":
+        meal.delete()
+    return redirect("dashboard")  # Redirect back to the dashboard
+
+from django.shortcuts import render
+
+# def dashboard(request):
+#     dark_mode = request.COOKIES.get('dark_mode', 'light')  # Default to 'light' mode
+#     return render(request, 'tracker/dashboard.html', {'dark_mode': dark_mode})
+
+
