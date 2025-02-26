@@ -11,9 +11,10 @@
     <div class="w-full max-w-5xl p-6 flex flex-col items-center">
         <div class="w-full bg-gradient-to-r from-purple-600 to-blue-400 p-4 text-white flex justify-between items-center">
             <h2 class="text-2xl font-bold">Dashboard</h2>
-            
             <ul class="flex space-x-6">
-                <li class="cursor-pointer hover:text-gray-200">🏠 Home</li>
+                <li> 
+                    <a href="{% url 'dashboard' %}" class="cursor-pointer hover:text-gray-200">🏠 Home</a>
+                </li>
                 <li>
                     <a href="{% url 'add_activity' %}" class="cursor-pointer hover:text-gray-200">📝 Activity</a>
                 </li>
@@ -42,15 +43,20 @@
             <div class="bg-white p-6 rounded-lg shadow-lg text-center">
                 <h3 class="text-xl font-semibold">Calories</h3>
                 {% if diet_plan %}
-                    <p class="text-3xl font-bold text-red-500">{{ calories }} kcal</p>
+                <p class="text-3xl font-bold text-red-500">{{ remaining_calories }} kcal</p>
+
+                
+
                 {% else %}
                     <p class="text-red-500">No data available</p>
                 {% endif %}
             </div>
             
             <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-                <h3 class="text-xl font-semibold">Heart Rate</h3>
-                <p class="text-3xl font-bold text-purple-500">110 BPM</p>
+                <h3 class="text-xl font-semibold">Total Calories Burned</h3>
+                <p class="text-3xl font-bold text-green-500">
+                    {{ total_calories_burned }} kcal
+                </p>
             </div>
         </div>
         
@@ -99,17 +105,17 @@
             </div>
         </div>
 
-    <!-- ✅ Script Section Added Here -->
+    <!-- ✅ Script Section for Dynamic Charts -->
     <script>
-        // Activity Chart
+        // Activity Chart (Dynamic)
         var ctx1 = document.getElementById('activityChart').getContext('2d');
         new Chart(ctx1, {
             type: 'bar',
             data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                labels: [{% for activity in activities %}"{{ activity.activity_type }}",{% endfor %}],
                 datasets: [{
-                    label: 'Activity',
-                    data: [20, 35, 45, 30, 50, 25, 40],
+                    label: 'Calories Burned',
+                    data: [{% for activity in activities %}{{ activity.calories_burned }},{% endfor %}],
                     backgroundColor: 'rgba(54, 162, 235, 0.7)'
                 }]
             }
