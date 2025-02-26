@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md bg-white rounded-lg shadow-2xl overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-500 text-white text-center py-6">
+            <h2 class="text-3xl font-bold">Login</h2>
+        </div>
+
+        <div class="px-8 py-6">
+            <form method="post" action="" id="loginForm">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <label class="block text-gray-700 text-sm font-medium mb-2">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
+                <small class="text-red-500 hidden" id="usernameError">Username is required</small>
+                
+                <label class="block text-gray-700 text-sm font-medium mt-4 mb-2">Password</label>
+                <div class="relative">
+                    <input type="password" id="password" name="password" placeholder="Enter your password"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 transition pr-10" required>
+                    <button type="button" id="togglePassword" class="absolute inset-y-0 right-3 flex items-center">
+                        👁
+                    </button>
+                </div>
+                <small class="text-red-500 hidden" id="passwordError">Password is required</small>
+                
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg mt-6 hover:bg-blue-700 transition transform hover:scale-105">
+                    Login
+                </button>
+            </form>
+            
+            <p class="text-center mt-4">
+                <a href="/register" class="text-blue-600 hover:text-blue-800 font-medium transition">
+                    Don't have an account? Register here
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("togglePassword").addEventListener("click", function() {
+            const passwordField = document.getElementById("password");
+            passwordField.type = passwordField.type === "password" ? "text" : "password";
+        });
+        
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            let valid = true;
+            if (!document.getElementById("username").value) {
+                document.getElementById("usernameError").classList.remove("hidden");
+                valid = false;
+            } else {
+                document.getElementById("usernameError").classList.add("hidden");
+            }
+            if (!document.getElementById("password").value) {
+                document.getElementById("passwordError").classList.remove("hidden");
+                valid = false;
+            } else {
+                document.getElementById("passwordError").classList.add("hidden");
+            }
+            if (!valid) {
+                event.preventDefault();
+                return;
+            }
+            
+            const response = await fetch("/custom-login", {
+                method: "GET",
+                credentials: "include"
+            });
+            const data = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, "text/html");
+            const csrfToken = doc.querySelector("input[name='csrfmiddlewaretoken']").value;
+            
+            let csrfInput = document.createElement("input");
+            csrfInput.type = "hidden";
+            csrfInput.name = "csrfmiddlewaretoken";
+            csrfInput.value = csrfToken;
+            this.appendChild(csrfInput);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2>Logged Out</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-center">You have been logged out successfully.</p>
+                    <div class="text-center">
+                        <a href="{% url 'login' %}" class="btn btn-primary">Login Again</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 500px;
+    }
+    .card {
+        margin-top: 20px;
+    }
+    .card-header {
+        font-weight: bold;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-4">Add Activity</h2>
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label for="activity_type" class="block font-medium text-gray-700">Activity Type</label>
+                <input type="text" class="w-full p-2 border rounded-md focus:ring focus:ring-blue-300" id="activity_type" name="activity_type" placeholder="e.g., Running, Swimming" required>
+                <p class="text-red-500 text-sm mt-1 hidden">Please enter an activity type.</p>
+            </div>
+            <div class="mb-4">
+                <label for="duration" class="block font-medium text-gray-700">Duration (in minutes)</label>
+                <input type="number" class="w-full p-2 border rounded-md focus:ring focus:ring-blue-300" id="duration" name="duration" placeholder="e.g., 30" required>
+                <p class="text-red-500 text-sm mt-1 hidden">Please enter the duration in minutes.</p>
+            </div>
+            <div class="mb-4">
+                <label for="calories_burned" class="block font-medium text-gray-700">Calories Burned</label>
+                <input type="number" class="w-full p-2 border rounded-md focus:ring focus:ring-blue-300" id="calories_burned" name="calories_burned" placeholder="e.g., 500" required>
+                <p class="text-red-500 text-sm mt-1 hidden">Please enter the calories burned.</p>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition">Add Activity</button>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector(".needs-validation");
+            const inputs = form.querySelectorAll("input");
+
+            form.addEventListener("submit", function(event) {
+                let valid = true;
+                inputs.forEach(input => {
+                    const errorMessage = input.nextElementSibling;
+                    if (!input.value.trim()) {
+                        errorMessage.classList.remove("hidden");
+                        valid = false;
+                    } else {
+                        errorMessage.classList.add("hidden");
+                    }
+                });
+                if (!valid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

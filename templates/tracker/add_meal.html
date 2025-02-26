@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2 class="my-4 text-center" style="color: black; font-weight: bold;">Add Meal</h2>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="meal_name" class="form-label">Meal Name</label>
+            <input type="text" class="form-control" id="meal_name" name="meal_name" placeholder="e.g., Breakfast, Lunch" required>
+            <div class="invalid-feedback">Please enter a meal name.</div>
+        </div>
+        <div class="mb-3">
+            <label for="calories_consumed" class="form-label">Calories Consumed</label>
+            <input type="number" class="form-control" id="calories_consumed" name="calories_consumed" placeholder="e.g., 500" required>
+            <div class="invalid-feedback">Please enter the calories consumed.</div>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Add Meal</button>
+    </form>
+</div>
+<script>
+    // Enable client-side validation
+    (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+{% endblock %}

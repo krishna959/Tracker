@@ -1,0 +1,47 @@
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Diet Plan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 class="text-xl font-bold text-center text-gray-800">✅ Your Diet Plan</h2>
+
+        {% if diet_plan %}
+        <p class="text-gray-700"><strong>📌 Age:</strong> {{ age }} yrs</p>
+        <p class="text-gray-700"><strong>📌 Height:</strong> {{ height }} cm</p>
+        <p class="text-gray-700"><strong>📌 Weight:</strong> {{ weight }} kg</p>
+        <p class="text-gray-700"><strong>📌 Goal:</strong> {{ goal|title }}</p>
+        <p class="text-gray-700"><strong>📌 Calorie Intake:</strong> {{ calories }} kcal</p>
+        <p class="text-gray-700"><strong>📌 Diet Plan:</strong> {{ diet_plan.diet_plan }}</p>
+        
+    
+        <h3 class="text-lg font-semibold text-gray-800 mt-4">🍽 Recommended Food Items:</h3>
+        <div class="mt-2 grid grid-cols-2 gap-2">
+            {% for image_url in diet_plan.get_image_list %}
+            <img src="{{ image_url }}" alt="Food Item" style="width:150px; height:150px; margin:10px;">
+        {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-red-500 text-center mt-4">❌ No diet plan found for your input.</p>
+        <p class="text-gray-700">Debug: diet_plan variable is empty.</p>  <!-- Add this for debugging -->
+    {% endif %}
+
+        <a href="{% url 'survey' %}" class="block mt-4 text-center text-blue-500 hover:underline">
+            🔄 Try Again
+        </a>
+
+        <a href="{% url 'dashboard' %}" class="block mt-4 text-center text-blue-500 hover:underline">
+            Dashboard
+        </a>
+    </div>
+
+</body>
+</html>
